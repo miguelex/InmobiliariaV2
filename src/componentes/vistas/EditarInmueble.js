@@ -128,6 +128,7 @@ class EditarInmueble extends Component {
         const keyWords = crearKeyword(textoBusqueda);
 
         inmueble.keywords = keyWords;
+        inmueble.propietario = this.props.firebase.auth.currentUser.uid;
 
         this.props.firebase.db
             .collection("Inmuebles")

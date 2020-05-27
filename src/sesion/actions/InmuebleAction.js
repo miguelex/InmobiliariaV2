@@ -2,12 +2,14 @@ export const obtenerData = (firebase, paginaSize, casaInicial, texto) => {
     return new Promise(async (resolve, eject)=> {
         let inmuebles = firebase.db
             .collection("Inmuebles")
+            .where("propietario","==",firebase.auth.currentUser.uid)
             .orderBy("direccion")
             .limit(paginaSize);
 
         if(casaInicial !== null){
             inmuebles = firebase.db
                 .collection("Inmuebles")
+                .where("propietario","==",firebase.auth.currentUser.uid)
                 .orderBy("direccion")
                 .startAfter(casaInicial)
                 .limit(paginaSize);
@@ -15,6 +17,7 @@ export const obtenerData = (firebase, paginaSize, casaInicial, texto) => {
             if(texto.trim() !== ""){
                 inmuebles = firebase.db
                     .collection("Inmuebles")
+                    .where("propietario","==",firebase.auth.currentUser.uid)
                     .orderBy("direccion")
                     .where("keywords", "array-contains", texto.toLowerCase())
                     .startAfter(casaInicial)
@@ -49,12 +52,14 @@ export const obtenerDataAnterior = (firebase, paginaSize, casaInicial, texto) =>
     return new Promise(async (resolve, eject)=> {
         let inmuebles = firebase.db
             .collection("Inmuebles")
+            .where("propietario","==",firebase.auth.currentUser.uid)
             .orderBy("direccion")
             .limit(paginaSize);
 
         if(casaInicial !== null){
             inmuebles = firebase.db
                 .collection("Inmuebles")
+                .where("propietario","==",firebase.auth.currentUser.uid)
                 .orderBy("direccion")
                 .startAt(casaInicial)
                 .limit(paginaSize);
@@ -62,6 +67,7 @@ export const obtenerDataAnterior = (firebase, paginaSize, casaInicial, texto) =>
             if(texto.trim() !== ""){
                 inmuebles = firebase.db
                     .collection("Inmuebles")
+                    .where("propietario","==",firebase.auth.currentUser.uid)
                     .orderBy("direccion")
                     .where("keywords", "array-contains", texto.toLowerCase())
                     .startAt(casaInicial)

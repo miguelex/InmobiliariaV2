@@ -59,7 +59,7 @@ class ListaInmuebles extends Component {
     inmuebles: [],
     textoBusqueda: "",
     paginas: [],
-    paginaSize: 1,
+    paginaSize: 2,
     casaInicial: null,
     paginaActual: 0
   };

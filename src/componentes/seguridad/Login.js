@@ -119,7 +119,7 @@ class Login extends Component {
                             fullWidth
                             margin="normal"
                             onChange = {this.onChange}
-                            value = {this.state.usuario.email}
+                            value = {this.state.usuario.email || ''}
                          />
                          <TextField 
                             variant="outlined"

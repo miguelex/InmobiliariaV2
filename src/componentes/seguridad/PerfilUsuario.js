@@ -153,7 +153,7 @@ const PerfilUsuario = props => {
                 variant="outlined"
                 fullWidth
                 label="Nombre"
-                value={estado.nombre}
+                value={estado.nombre || ''}
                 onChange={cambiarDato}
               />
             </Grid>
@@ -163,7 +163,7 @@ const PerfilUsuario = props => {
                 variant="outlined"
                 fullWidth
                 label="Apellidos"
-                value={estado.apellido}
+                value={estado.apellido || ''}
                 onChange={cambiarDato}
               />
             </Grid>
@@ -173,7 +173,7 @@ const PerfilUsuario = props => {
                 variant="outlined"
                 fullWidth
                 label="E-Mail"
-                value={estado.email}
+                value={estado.email || ''}
                 onChange={cambiarDato}
               />
             </Grid>
@@ -183,7 +183,7 @@ const PerfilUsuario = props => {
                 variant="outlined"
                 fullWidth
                 label="Telefono"
-                value={estado.telefono}
+                value={estado.telefono  || ''}
                 onChange={cambiarDato}
               />
             </Grid>
