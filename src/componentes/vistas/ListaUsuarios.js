@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Container, Paper, Grid, Table, TableBody, TableRow, TableCell, Button} from '@material-ui/core';
+import {Container, Paper, Grid, Table, TableBody, TableRow, TableCell, Button, Dialog, DialogTitle, DialogContent, Select, MenuItem, DialogActions} from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import { obtenerUsuariosApp } from '../../redux/actions/usuarioAction';
 import { enviarCorreoElectronico } from '../../redux/actions/emailAction';
@@ -26,8 +26,14 @@ const ListaUsuarios = props => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const listaArreglo = useSelector(state => state.usuarioRedux.usuarios);
+    const [estadoDialog, abreDialog] = useState(false);
+    const [usuarioDialog, llenarUsuarioDialog] = useState({
+        email : "",
+        telefono : "",
+        roles : []
+    })
 
+    const listaArreglo = useSelector(state => state.usuarioRedux.usuarios);
     const dispatchRedux = useDispatch();
 
     useEffect(() => {
@@ -57,8 +63,38 @@ const ListaUsuarios = props => {
         })
     }
 
+    const abrirDialogConUsuario = row => {
+        llenarUsuarioDialog(row);
+        abreDialog(true);
+
+    }
+
     return (
         <Container style={style.container}>
+
+            <Dialog open = {estadoDialog} onClose={() => {abreDialog(false)}}>
+                <DialogTitle>
+                    Roles del usuario {usuarioDialog.email || usuarioDialog.telefono}
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container justify="center">
+                        <Grid item xs={6} sm={6}>
+                            <Select>
+                                <MenuItem value={"0"}>Seleccione Rol</MenuItem>
+                                <MenuItem value={"ADMIN"}>Administrador</MenuItem>
+                                <MenuItem value={"OPERADOR"}>Operador</MenuItem>
+                            </Select>
+                        </Grid>
+                        <Grid item xs={6} sm={6}>
+                            <Button color="secondary" variant="contained">Agregar</Button>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button color="primary" onClick={() => {abreDialog(false)}}>Cerrar</Button>
+                </DialogActions>
+            </Dialog>
+
             <Paper style={style.paper}>
                 <Grid container justify="center">
                     <Grid item xs={12} sm={12}>
@@ -71,7 +107,7 @@ const ListaUsuarios = props => {
                                             <TableCell align="left">{row.email || row.telefono}</TableCell>
                                             <TableCell align="left">{row.nombre ? (row.nombre + ' ' + row.apellido) : 'No tiene nombre'}</TableCell>
                                             <TableCell>
-                                                <Button variant="contained" color="primary" size="small">Roles</Button>
+                                                <Button variant="contained" color="primary" size="small" onClick={() =>abrirDialogConUsuario(row)}>Roles</Button>
                                             </TableCell>
                                             <TableCell>
                                                 <Button variant="contained" onClick={() => enviarEmail(row.email)} color="primary" size="small">Enviar Mensaje</Button>

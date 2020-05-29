@@ -13,9 +13,15 @@ export const obtenerUsuariosApp = (dispatch) => {
     })
 }
 
-export const actualizarRoles = (dispatch, usuario) => {
+export const actualizarRoles = (dispatch, usuario, role) => {
     return new Promise (async (resolve, eject) => {
-        const dataRest = await axios.post('https://us-central1-templatecurso-6d079.cloudfunctions.net/usuariosMantenimiento', usuario);
+        
+        const params = {
+            id : usuario.id,
+            role : role,
+            roles : usuario.roles
+        }
+        const dataRest = await axios.post('https://us-central1-templatecurso-6d079.cloudfunctions.net/usuariosMantenimiento', params);
 
         dispatch ({
             type : "ACTUALIZAR_ROLES",
