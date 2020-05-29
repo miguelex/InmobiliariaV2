@@ -6,7 +6,7 @@ export const obtenerUsuariosApp = (dispatch) => {
 
         dispatch ({
             type : "LISTA_USUARIOS",
-            payload : dataRest.data
+            payload : dataRest.data.usuarios
         })
 
         resolve();

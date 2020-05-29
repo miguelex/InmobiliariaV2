@@ -21,6 +21,7 @@ import LoginTelefono from "./componentes/seguridad/LoginTelefono";
 
 import store from "./redux/store";
 import { Provider } from "react-redux";
+import ListaUsuarios from "./componentes/vistas/ListaUsuarios";
 
 function App(props) {
   let firebase = React.useContext(FirebaseContext);
@@ -88,6 +89,12 @@ function App(props) {
                   path="/inmueble/:id"
                   autenticadoFirebase={firebase.auth.currentUser}
                   component={EditarInmueble}
+                />
+                <RutaAutenticada
+                  exact
+                  path="/listaUsuarios"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={ListaUsuarios}
                 />
                 <Route
                   path="/auth/registrarUsuario"
