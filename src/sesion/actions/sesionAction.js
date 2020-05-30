@@ -1,3 +1,12 @@
+export const refrescarSesion = (firebase) => {
+  return new Promise((resolve, eject) => {
+    firebase.auth.onAuthStateChanged(user => {
+      user.getIdToken(true);
+      resolve();
+    });
+  });
+};
+
 export const iniciarSesion = (dispatch, firebase, email, password) => {
   return new Promise((resolve, eject) => {
     firebase.auth

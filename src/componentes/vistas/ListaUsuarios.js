@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {Container, Paper, Grid, Table, TableBody, TableRow, TableCell, Button, Dialog, DialogTitle, DialogContent, Select, MenuItem, DialogActions} from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
-import { obtenerUsuariosApp } from '../../redux/actions/usuarioAction';
+import { obtenerUsuariosApp, actualizarRoles } from '../../redux/actions/usuarioAction';
 import { enviarCorreoElectronico } from '../../redux/actions/emailAction';
 import { useStateValue } from '../../sesion/store';
 import { openMensajePantalla } from '../../sesion/actions/snackbarAction';
+import { refrescarSesion } from '../../sesion/actions/sesionAction';
+import {consumerFirebase} from '../../server/';
 
 const style = {
     paper : {
@@ -33,6 +35,8 @@ const ListaUsuarios = props => {
         roles : []
     })
 
+    const [selectRole, cambiarSelectRole] = useState("0");
+    
     const listaArreglo = useSelector(state => state.usuarioRedux.usuarios);
     const dispatchRedux = useDispatch();
 
@@ -69,6 +73,91 @@ const ListaUsuarios = props => {
 
     }
 
+    const eventoEnCombobox = event =>{
+        cambiarSelectRole(event.target.value);
+    }
+
+    const agregarRol = async() => {
+        if(!usuarioDialog.roles){
+            usuarioDialog.roles =[];
+        }
+
+        const existeRole = usuarioDialog.roles.filter(rol => rol.nombre === selectRole)
+
+        if(existeRole.length === 0) {
+            // Authentication firebase
+            //Custom claims
+
+            const customClaims = {};
+            usuarioDialog.roles.map(_role => {
+                Object.defineProperty(customClaims, _role.nombre, {
+                    value: _role.estado,
+                    writable : true,
+                    enumerable : true,
+                    configurable: true
+                })
+            })
+
+            Object.defineProperty(customClaims, selectRole, {
+                value : true,
+                writable : true,
+                enumerable : true,
+                configurable: true
+            })
+
+            // Firestore
+            //Collection("Users")
+
+            usuarioDialog.roles.push({nombre : selectRole, estado : true})
+
+            const respuesta = await actualizarRoles(dispatchRedux, usuarioDialog, customClaims);
+            console.log(respuesta);
+            obtenerUsuariosApp(dispatchRedux)
+
+            refrescarSesion(props.firebase);
+
+            openMensajePantalla(dispatch, {
+                open : true,
+                mensaje : "Se guardo el rol de usuario"
+            })
+        }
+    }
+
+    const removerRol = async rol => {
+
+        const nuevoArregloRoles = usuarioDialog.roles.filter(currentRol => currentRol.nombre !== rol);
+
+        usuarioDialog.roles = nuevoArregloRoles;
+
+        const customClaims = {};
+        nuevoArregloRoles.map(_rol => {
+            Object.defineProperty(customClaims, _rol.nombre, {
+                value : _rol.nombre,
+                writable : true,
+                enumerable : true,
+                configurable : true
+            })
+        })
+
+        Object.defineProperty (customClaims, rol, {
+            value : false,
+            writable : true,
+            enumerable : true,
+            configurable : true
+        })
+
+        const respuesta = actualizarRoles(dispatchRedux, usuarioDialog, customClaims)
+        console.log(respuesta);
+
+        obtenerUsuariosApp(dispatchRedux);
+        refrescarSesion(props.firebase);
+
+        openMensajePantalla(dispatch, {
+            open : true,
+            mensaje :" Se elimino el rol seleccionado"
+        })
+    }
+
     return (
         <Container style={style.container}>
 
@@ -79,14 +168,39 @@ const ListaUsuarios = props => {
                 <DialogContent>
                     <Grid container justify="center">
                         <Grid item xs={6} sm={6}>
-                            <Select>
+                            <Select value ={selectRole} onChange={eventoEnCombobox}>
                                 <MenuItem value={"0"}>Seleccione Rol</MenuItem>
                                 <MenuItem value={"ADMIN"}>Administrador</MenuItem>
                                 <MenuItem value={"OPERADOR"}>Operador</MenuItem>
                             </Select>
                         </Grid>
                         <Grid item xs={6} sm={6}>
-                            <Button color="secondary" variant="contained">Agregar</Button>
+                            <Button color="secondary" variant="contained" onClick={() =>agregarRol()}>Agregar</Button>
+                        </Grid>
+
+                        <Grid item xs={12} sm={12}>
+                            <Table>
+                                <TableBody>
+                                    {usuarioDialog.roles
+                                    ? usuarioDialog.roles.map((role, i) =>(
+                                        <TableRow key={i}>
+                                            <TableCell align="left">{role.nombre}</TableCell>
+                                            <TableCell align="left">
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    size="small"
+                                                    onClick={()=> removerRol(role.nombre)}
+                                                >
+                                                    Eliminar
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                    : null
+                                    }
+                                </TableBody>
+                            </Table>
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -128,4 +242,4 @@ const ListaUsuarios = props => {
 
 }
 
-export default ListaUsuarios;
+export default consumerFirebase(ListaUsuarios);
