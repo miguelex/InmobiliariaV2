@@ -17,6 +17,7 @@ import { MenuIzquierda } from "./menuIzquierda";
 import {Link} from 'react-router-dom';
 import fotoUsuarioTemp from "../../../logo.svg";
 import { withRouter } from "react-router-dom";
+import { obtenerPermisoNotification } from "../../../sesion/actions/notificationAction";
 
 const styles = theme => ({
   sectionDesktop: {
@@ -83,6 +84,15 @@ class BarSession extends Component {
     return nuevosObjetos;
   }
 
+  recibirNotificaciones = async() => {
+    const {firebase} = this.state;
+    const [{sesion}, dispatch] = this.context;
+    const {usuario} = sesion;
+
+    if(firebase.messagingValidation.isSupported()) {
+      await obtenerPermisoNotification(firebase,usuario,dispatch);
+    }
+  }
   render() {
     const { classes } = this.props;
     const [{ sesion }, dispatch] = this.context;
@@ -115,6 +125,7 @@ class BarSession extends Component {
           >
             <MenuIzquierda
               classes={classes}
+              permisoParaObtenerNotificacion = {this.recibirNotificaciones}
             />
           </div>
         </Drawer>

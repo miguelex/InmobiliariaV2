@@ -3,7 +3,7 @@ import { List, ListItemText, Divider, ListItem } from "@material-ui/core";
 import {Link} from 'react-router-dom';
 
 
-export const MenuIzquierda =({classes}) => (
+export const MenuIzquierda =({classes, permisoParaObtenerNotificacion}) => (
     <div className={classes.list}>
         <List>
             <ListItem component={Link} button to="/auth/perfil">
@@ -22,8 +22,12 @@ export const MenuIzquierda =({classes}) => (
                 <ListItemText classes={{primary: classes.listItemText}} primary="Inmuebles" />
             </ListItem>
             <ListItem component={Link} button to="/listaUsuarios">
-                <i className="material-icons">mail_outline</i>
+                <i className="material-icons">group</i>
                 <ListItemText classes={{primary: classes.listItemText}} primary="Usuarios" />
+            </ListItem>
+            <ListItem button onClick={permisoParaObtenerNotificacion}>
+                <i className="material-icons">notifications_none</i>
+                <ListItemText classes={{primary: classes.listItemText}} primary="Recibir notificaciones" />
             </ListItem>
         </List>
 

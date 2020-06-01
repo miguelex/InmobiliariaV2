@@ -2,6 +2,7 @@ import app from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/storage';
+import 'firebase/messaging';
 
 const config = {
     apiKey: "AIzaSyCtewL0TV6HecOkLHbXGVFU_WkTQ2vqeCI",
@@ -36,6 +37,12 @@ class Firebase{
         this.auth = app.auth();
         this.storage = app.storage();
         this.authorization = app.auth;
+
+        this.messagingValidation = app.messaging;
+        if(this.messagingValidation.isSupported()){
+            this.messaging = app.messaging();
+            this.messaging.usePublicVapidKey("BMnqjChiaKgLU58tcOl73wn8adQlVOJvDpivRve-e9kSZwFR1a52lnEGQbhZJyq3IvRqpfDcaniO2GspW6e6Nr0");
+        }
 
         this.storage.ref().constructor.prototype.guardarDocumentos = function(documentos){
             var ref=this;
