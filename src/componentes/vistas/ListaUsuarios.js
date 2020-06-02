@@ -7,6 +7,7 @@ import { useStateValue } from '../../sesion/store';
 import { openMensajePantalla } from '../../sesion/actions/snackbarAction';
 import { refrescarSesion } from '../../sesion/actions/sesionAction';
 import {consumerFirebase} from '../../server/';
+import { enviarNotification } from '../../sesion/actions/notificationAction';
 
 const style = {
     paper : {
@@ -158,6 +159,27 @@ const ListaUsuarios = props => {
         })
     }
 
+    const enviarPushNotification = usuarioFila => {
+        if(props.firebase.messagingValidation.isSupported()){
+            const listaToken = usuarioFila.tokenArreglo;
+            const obj = {
+                token: listaToken || []
+            }
+
+            enviarNotification(obj).then(respuestaServidor =>{
+                openMensajePantalla(dispatch, {
+                    open: true,
+                    mensaje: respuestaServidor.data.mensaje
+                })
+            })
+        } else {
+            openMensajePantalla(dispatch, {
+                open: true,
+                mensaje: " Esta version del navegador no soporta push notification"
+            })
+        }
+    }
+
     return (
         <Container style={style.container}>
 
@@ -222,6 +244,9 @@ const ListaUsuarios = props => {
                                             <TableCell align="left">{row.nombre ? (row.nombre + ' ' + row.apellido) : 'No tiene nombre'}</TableCell>
                                             <TableCell>
                                                 <Button variant="contained" color="primary" size="small" onClick={() =>abrirDialogConUsuario(row)}>Roles</Button>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Button variant="contained" onClick={() => enviarPushNotification(row)} color="primary" size="small">Notificacion</Button>
                                             </TableCell>
                                             <TableCell>
                                                 <Button variant="contained" onClick={() => enviarEmail(row.email)} color="primary" size="small">Enviar Mensaje</Button>
