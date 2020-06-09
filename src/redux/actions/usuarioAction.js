@@ -13,21 +13,35 @@ export const obtenerUsuariosApp = (dispatch) => {
     })
 }
 
-export const actualizarRoles = (dispatch, usuario, role) => {
-    return new Promise (async (resolve, eject) => {
+export const actualizarRoles = (dispatch, usuario, role, firebase) => {
+    return new Promise((resolve, eject) => {
+      
+         firebase.auth.onAuthStateChanged(user=>{
+             if(user){
+                 user.getIdToken()
+                 .then(async tokenUsuario =>{
+                      
+                      const headers = {
+                          "Content-Type": "Application/json",
+                          "authorization" : "Bearer " + tokenUsuario
+                      }
+  
+                      const params = {
+                          id : usuario.id,
+                          role : role,
+                          roles : usuario.roles
+                      }
+  
+                      const respuesta = await axios.post('https://us-central1-templatecurso-6d079.cloudfunctions.net/usuariosMantenimiento',params, {"headers": headers});
+                      
+                      
+  
+                      resolve(respuesta);
+  
+                 })
+             }
+         })
         
-        const params = {
-            id : usuario.id,
-            role : role,
-            roles : usuario.roles
-        }
-        const dataRest = await axios.post('https://us-central1-templatecurso-6d079.cloudfunctions.net/usuariosMantenimiento', params);
-
-        dispatch ({
-            type : "ACTUALIZAR_ROLES",
-            payload : dataRest.data
-        })
-
-        resolve();
-    })
-}
+      
+    });
+  };
